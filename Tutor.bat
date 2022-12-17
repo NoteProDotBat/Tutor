@@ -1,6 +1,5 @@
 :: [
 :: MAKE SURE THAT ALL FILES ARE INCLUDED!!!
-:: Duplicate file names with different contents. if EXIST file (the file exists but the contents inside are not what are needed for that version to work. (Name Tutor folder with version number EX: Tutor v1.1.1 BETA)
 @echo off
 echo [?25l
 chcp 65001> nul
