@@ -11,11 +11,9 @@ setlocal ENABLEEXTENSIONS> nul
 mode 60,39> nul
 
 title Tutor v1.0.0 BETA
-echo Downloading needed files...
 :Connection
 echo Testing Connection...
-timeout /t 2 /NOBREAK > nul
-ping www.google.com -n 1 -w 1000 > nul
+ping github.com -n 1 -w 3000 > nul
 if %errorlevel%==1 (
 	cls
 	echo No internet connection!
@@ -35,8 +33,14 @@ if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 		timeout /t 3 /NOBREAK > nul
 		goto :Connection
 	)
-	curl -s -o "C:\Tutor\Files\Batbox.exe" "https://drive.google.com/uc?id=1MjdtU-EHj4xPETGV5I6I232hdrXaspqN&export=download"
+	curl -s -o "C:\Tutor\Files\Batbox.exe" "https://github.com/NoteProDotBat/Tutor/blob/main/batbox.exe?raw=true"
 )
+if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -s -o "C:\Tutor\Files\GetInput.exe" "https://github.com/NoteProDotBat/Tutor/blob/main/GetInput.exe?raw=true")
+if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -s -o "C:\Tutor\Files\Box.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Box.bat")
+if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -s -o "C:\Tutor\Files\Button.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Button.bat")
+if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -s -o "C:\Tutor\Files\Getlen.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Getlen.bat")
+if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -s -o "C:\Tutor\Files\Letter.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Letter.bat")
+::ADD THE OTHER FILES HERE
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
 if NOT EXIST "C:\Tutor\Files\Lists\Lists.txt" (
 echo Tutor Tutorial                                        
@@ -56,7 +60,8 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 	timeout /t 2 /NOBREAK > nul
 )
 cls
-
+cd..
+cd "C:\Tutor\Files"
 ::%%~nxG
 :: Exit button?
 :Home
