@@ -32,13 +32,13 @@ if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 		timeout /t 3 /NOBREAK > nul
 		goto :Connection
 	)
-	curl -s -o "C:\Tutor\Files\Batbox.exe" "https://github.com/NoteProDotBat/Tutor/blob/main/batbox.exe?raw=true"
+	curl -s -o "C:\Tutor\Files\Batbox.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/batbox.exe"
 )
-if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -s -o "C:\Tutor\Files\GetInput.exe" "https://github.com/NoteProDotBat/Tutor/blob/main/GetInput.exe?raw=true")
-if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -s -o "C:\Tutor\Files\Box.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Box.bat")
-if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -s -o "C:\Tutor\Files\Button.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Button.bat")
-if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -s -o "C:\Tutor\Files\Getlen.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Getlen.bat")
-if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -s -o "C:\Tutor\Files\Letter.bat" "https://github.com/NoteProDotBat/Tutor/raw/main/Letter.bat")
+if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -s -o "C:\Tutor\Files\GetInput.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/GetInput.exe")
+if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -s -o "C:\Tutor\Files\Box.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Box.bat")
+if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -k -s -o "C:\Tutor\Files\Button.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Button.bat")
+if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Getlen.bat")
+if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -k -s -o "C:\Tutor\Files\Letter.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Letter.bat")
 ::ADD THE OTHER FILES HERE
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
 if NOT EXIST "C:\Tutor\Files\Lists\Lists.txt" (
@@ -103,6 +103,7 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
+echo.                                                            
 <"C:\Tutor\Files\Lists\recent.txt" set /p recent=
 set "Name1=%recent%"
 call Button 0 -1 00 " " 1 13 B0 "%recent%" 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 18 B0 "                      Study Sets                      " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 23 B0 "                       Make Set                       " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 28 B0 "                       Settings                       " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover
@@ -115,7 +116,7 @@ if %errorlevel%==14 goto :Settings
 if %errorlevel%==18 (
 	echo [34;2H Created by [101;93mNotePro[0m                                       
 	echo [35;2H                                                          
-	echo [36;2H                                                          
+	echo [36;2H Special thanks to [101;93mKotsasmin[0m                              
 	echo [37;2H                                                          
 	timeout /t 3 /NOBREAK > nul
 )	
