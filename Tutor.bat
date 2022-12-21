@@ -360,5 +360,5 @@ if %errorlevel%==3 (
 	set/a i+=1
 	if !i! GTR %questions% set i=%questions%
 )
-if %errorlevel%==4 exit/b
+if %errorlevel%==4 exit/b 100
 goto :flashcards
