@@ -59,8 +59,8 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 	timeout 2 /NOBREAK > nul
 )
 cls
-REM cd..
-REM cd "C:\Tutor\Files"
+cd..
+cd "C:\Tutor\Files"
 ::%%~nxG
 :: Exit button?
 :Home
