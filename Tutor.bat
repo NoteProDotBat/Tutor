@@ -41,6 +41,9 @@ if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.b
 if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -k -s -o "C:\Tutor\Files\Letter.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Letter.bat")
 ::ADD THE OTHER FILES HERE
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
+if NOT EXIST "C:\Tutor\Files\Lists\recent.txt" (
+echo Tutor Tutorial                                        
+)>"C:\Tutor\Files\Lists\recent.txt"
 if NOT EXIST "C:\Tutor\Files\Lists\Lists.txt" (
 echo Tutor Tutorial                                        
 )>"C:\Tutor\Files\Lists\Lists.txt"
