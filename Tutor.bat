@@ -29,7 +29,7 @@ if NOT EXIST "C:\Tutor\Files" md C:\Tutor\Files
 if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 	if %errorlevel%==2 (
 		echo Unable to finish downloads. Please try again later.
-		timeout /t 3 /NOBREAK > nul
+		timeout 3 /NOBREAK > nul
 		goto :Connection
 	)
 	curl -s -o "C:\Tutor\Files\Batbox.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/batbox.exe"
@@ -56,11 +56,11 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 		echo set a4=No
 	)>"C:\Tutor\Files\Lists\Tutor Tutorial                                        .bat"
 	echo Welcome to the Study Tool!
-	timeout /t 2 /NOBREAK > nul
+	timeout 2 /NOBREAK > nul
 )
 cls
-cd..
-cd "C:\Tutor\Files"
+REM cd..
+REM cd "C:\Tutor\Files"
 ::%%~nxG
 :: Exit button?
 :Home
@@ -103,22 +103,20 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
-echo.                                                            
 <"C:\Tutor\Files\Lists\recent.txt" set /p recent=
 set "Name1=%recent%"
-call Button 0 -1 00 " " 1 13 B0 "%recent%" 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 18 B0 "                      Study Sets                      " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 23 B0 "                       Make Set                       " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 28 B0 "                       Settings                       " 0 -1 00 " " 0 -1 00 " " 0 -1 00 " " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover
+call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
-:: Buttons 2,6,10,14,18...
-if %errorlevel%==2 call :Learn 1
-if %errorlevel%==6 goto :Sets1
-if %errorlevel%==10 goto :Make
-if %errorlevel%==14 goto :Settings
-if %errorlevel%==18 (
+if %errorlevel%==1 call :Learn 1
+if %errorlevel%==2 goto :Sets1
+if %errorlevel%==3 goto :Make
+if %errorlevel%==4 goto :Settings
+if %errorlevel%==5 (
 	echo [34;2H Created by [101;93mNotePro[0m                                       
 	echo [35;2H                                                          
 	echo [36;2H Special thanks to [101;93mKotsasmin[0m                              
 	echo [37;2H                                                          
-	timeout /t 3 /NOBREAK > nul
+	timeout 3 /NOBREAK > nul
 )	
 goto :Home
 
@@ -136,7 +134,6 @@ cls
 :nMake
 if %char%==55 (echo [1;1H[0m Enter a set name 54/54 characters remaining) else echo [1;1H[0m Enter a set name %char%/54 characters remaining 
 ::do a fancy escape feature??
-::exit button?
 set "Name=%L1%%L2%%L3%%L4%%L5%%L6%%L7%%L8%%L9%%L10%%L11%%L12%%L13%%L14%%L15%%L16%%L17%%L18%%L19%%L20%%L21%%L22%%L23%%L24%%L25%%L26%%L27%%L28%%L29%%L30%%L31%%L32%%L33%%L34%%L35%%L36%%L37%%L38%%L39%%L40%%L41%%L42%%L43%%L44%%L45%%L46%%L47%%L48%%L49%%L50%%L51%%L52%%L53%%L54%"
 set/a xPos=%char%+4
 echo [?25l[2;0H[0;34m╔══════════════════════════════════════════════════════════╗
@@ -146,7 +143,7 @@ echo ║[106m                                                          [0;34m�
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
-echo ║[106m                                                          [0;34m║
+echo ║[106m                    Press esc to exit                     [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
@@ -184,6 +181,7 @@ if %char% GEQ 54 (
 ::Create Letter.bat and add it to needed files
 set/a char+=1
 getinput
+if %errorlevel%==27 goto :Home
 if %errorlevel%==13 (
 	echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 	goto :questions
@@ -280,24 +278,22 @@ echo ║[106m                                                          [0;34m�
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
 echo [38;0H                                                            
-call Button 10 -1 00 " " 1 1 B0 " < " 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 26 1 B0 " H " 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 52 1 B0 " > " 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 7 B0 "%Name1%" 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 12 B0 "%Name2%" 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 17 B0 "%Name3%" 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 22 B0 "%Name4%" 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 27 B0 "%Name5%" 10 -1 00 " " 10 -1 00 " " 10 -1 00 " " 1 32 B0 "%Name6%" X _Var_Box _Var_Hover
+call Button 1 1 B0 " < " 26 1 B0 " H " 52 1 B0 " > " 1 7 B0 "%Name1%" 1 12 B0 "%Name2%" 1 17 B0 "%Name3%" 1 22 B0 "%Name4%" 1 27 B0 "%Name5%" 1 32 B0 "%Name6%" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
-:: Buttons 2,6,10,14,18...
-if %errorlevel%==2 call :mieq
+if %errorlevel%==1 call :mieq
 ::Goes to home Might want to change it to word "Home" odd letter button
-if %errorlevel%==6 goto :Home
-if %errorlevel%==10 call :pleq
+if %errorlevel%==2 goto :Home
+if %errorlevel%==3 call :pleq
 ::All below open sets
 :: call :open.bat %Name(number)%
-if %errorlevel%==14 call :Learn 1
-if %errorlevel%==18 call :Learn 2
-if %errorlevel%==22 call :Learn 3
-if %errorlevel%==26 call :Learn 4
-if %errorlevel%==30 call :Learn 5
-if %errorlevel%==34 call :Learn 6
+if %errorlevel%==4 call :Learn 1
+if %errorlevel%==5 call :Learn 2
+if %errorlevel%==6 call :Learn 3
+if %errorlevel%==7 call :Learn 4
+if %errorlevel%==8 call :Learn 5
+if %errorlevel%==9 call :Learn 6
 goto :Sets2
 
-::Keep in mind that %num% is the number of sets
 :pleq
 set/a sNum+=6
 set/a nSix=%num%/6*6
@@ -306,11 +302,6 @@ exit/b
 
 :mieq
 set/a sNum-=6
-REM if %sNum% LSS 0 (
-	REM set/a sNum=%nSix%
-	REM call :blankButtons
-REM )
-:: make a page loop feature
 exit/b
 
 :blankButtons
@@ -336,7 +327,7 @@ set card=1
 set i=1
 if "!Name%1!"=="                                                      " (
 	echo Nothing here!
-	timeout/t 3 >nul
+	timeout 3 >nul
 	exit/b
 )
 set Flines=0
