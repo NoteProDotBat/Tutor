@@ -35,7 +35,7 @@ Set Button_height=3
 Set _X=%~1
 Set _Y=%~2
 set color=%~3
-Set _Invert_Color=[34;7m
+Set _Invert_Color=30
 ::Set _Invert_Color=%Color:~1,1%%Color:~0,1%
 set "Button_text=%~4"
 
