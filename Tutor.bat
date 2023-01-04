@@ -9,7 +9,7 @@ setlocal ENABLEEXTENSIONS> nul
 
 mode 60,39> nul
 
-title Tutor v1.0.0 BETA
+title Tutor
 :Connection
 echo Testing Connection...
 ping github.com -n 1 -w 3000 > nul
@@ -39,7 +39,8 @@ if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -s -o "C:\Tutor\Files\Box.bat" "http
 if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -k -s -o "C:\Tutor\Files\Button.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Button.bat")
 if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Getlen.bat")
 if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -k -s -o "C:\Tutor\Files\Letter.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Letter.bat")
-::ADD THE OTHER FILES HERE
+if NOT EXIST "C:\Tutor\Files\CurrentVersion.txt" (curl -k -s -o "C:\Tutor\Files\CurrentVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/CurrentVersion")
+curl -k -s -o "C:\Tutor\Files\NewestVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/NewestVersion"
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
 if NOT EXIST "C:\Tutor\Files\Lists\recent.txt" (
 echo Tutor Tutorial                                        
@@ -64,6 +65,9 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 cls
 cd..
 cd "C:\Tutor\Files"
+<"CurrentVersion.txt" set /p cVer=
+<"NewestVersion.txt" set /p nVer=
+if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (title Tutor %cVer% - UPDATE AVAILABLE)
 ::%%~nxG
 :: Exit button?
 :Home
@@ -125,16 +129,12 @@ goto :Home
 
 :Make
 set /a qna=0
-REM cls
-REM getinput
-REM echo %%errorlevel%%
-REM pause > nul
-REM goto :Make
 for /L %%A in (1,1,54) do set "L%%A= "
 set/a char=0
 cls
 
 :nMake
+set clr=1
 if %char%==55 (echo [1;1H[0m Enter a set name 54/54 characters remaining) else echo [1;1H[0m Enter a set name %char%/54 characters remaining 
 ::do a fancy escape feature??
 set "Name=%L1%%L2%%L3%%L4%%L5%%L6%%L7%%L8%%L9%%L10%%L11%%L12%%L13%%L14%%L15%%L16%%L17%%L18%%L19%%L20%%L21%%L22%%L23%%L24%%L25%%L26%%L27%%L28%%L29%%L30%%L31%%L32%%L33%%L34%%L35%%L36%%L37%%L38%%L39%%L40%%L41%%L42%%L43%%L44%%L45%%L46%%L47%%L48%%L49%%L50%%L51%%L52%%L53%%L54%"
@@ -180,27 +180,30 @@ if %char% GEQ 54 (
 	set/a char=54
 	Echo [3;2H[106;30mMax character Limit!
 ) else echo [3;2H[106;30m                    
-::Make sure that all of the files that you used are put in needed files!!!
-::Create Letter.bat and add it to needed files
 set/a char+=1
 getinput
 if %errorlevel%==27 goto :Home
 if %errorlevel%==13 (
 	echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
-	goto :questions
+	goto :Questions
 )
 call Letter.bat %errorlevel%
 goto :nMake
 
 :Questions
-:: Remove below CLS when ready
+:: Remove below CLS when ready?
 :: have an escape into the blue area under the set name?
 cls
 set/a qna+=1
 echo Press "enter" on an empty question box to stop
-echo No special characters please! USE AT OWN RISK
+echo No special characters please, USE AT YOUR OWN RISK
+set "q%qna%= "
 set/p "q%qna%=Question %qna%: "
-if "!q%qna%!"=="" goto :Home
+if "!q%qna%!"==" " (
+	echo [0m
+	cls
+	goto :Home
+)
 set/p "a%qna%=Answer %qna%: "
 (
 echo set "q%qna%=!q%qna%!"
@@ -211,6 +214,8 @@ goto :Questions
 :Settings
 cls
 echo Nothing here yet...
+call Button 1 13 B0 "hello" X _Var_Box _Var_Hover
+getinput /m %_Var_Box% /h %_Var_Hover%s
 pause> nul
 goto :Home
 
