@@ -1,5 +1,6 @@
 :: [
 :: MAKE SURE THAT ALL FILES ARE INCLUDED!!!
+:: Put numbers next to ERROR# and make an error chart
 @echo off
 echo [?25l
 chcp 65001> nul
@@ -54,8 +55,8 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 		echo set a1=Press the button
 		echo set q2=How many questions are required to make a set?
 		echo set a2=Going to be a minimum of 4 on release date.
-		echo set q3=Is batch awsome?
-		echo set a3=Yes!!!
+		echo set q3=Is batch awesome?
+		echo set a3=Yes
 		echo set q4=Is earth a star?
 		echo set a4=No
 	)>"C:\Tutor\Files\Lists\Tutor Tutorial                                        .bat"
@@ -67,7 +68,7 @@ cd..
 cd "C:\Tutor\Files"
 <"CurrentVersion.txt" set /p cVer=
 <"NewestVersion.txt" set /p nVer=
-if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (title Tutor %cVer% - UPDATE AVAILABLE)
+if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set LatestV=0 && title Tutor %cVer% - UPDATE AVAILABLE)
 ::%%~nxG
 :: Exit button?
 :Home
@@ -100,9 +101,9 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
-echo ║[106m                                                          [0;34m║
-echo ║[106m                                                          [0;34m║
-echo ║[106m                                                          [0;34m║
+if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
@@ -112,7 +113,8 @@ echo ║[46m                                                          [0;34m�
 echo ╚══════════════════════════════════════════════════════════╝[0m
 <"C:\Tutor\Files\Lists\recent.txt" set /p recent=
 set "Name1=%recent%"
-call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover
+if DEFINED LatestV (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
+
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 call :Learn 1
 if %errorlevel%==2 goto :Sets1
@@ -128,13 +130,13 @@ if %errorlevel%==5 (
 goto :Home
 
 :Make
+set Dupe=0
 set /a qna=0
 for /L %%A in (1,1,54) do set "L%%A= "
 set/a char=0
 cls
 
 :nMake
-set clr=1
 if %char%==55 (echo [1;1H[0m Enter a set name 54/54 characters remaining) else echo [1;1H[0m Enter a set name %char%/54 characters remaining 
 ::do a fancy escape feature??
 set "Name=%L1%%L2%%L3%%L4%%L5%%L6%%L7%%L8%%L9%%L10%%L11%%L12%%L13%%L14%%L15%%L16%%L17%%L18%%L19%%L20%%L21%%L22%%L23%%L24%%L25%%L26%%L27%%L28%%L29%%L30%%L31%%L32%%L33%%L34%%L35%%L36%%L37%%L38%%L39%%L40%%L41%%L42%%L43%%L44%%L45%%L46%%L47%%L48%%L49%%L50%%L51%%L52%%L53%%L54%"
@@ -178,31 +180,43 @@ echo ║[106m                                                          [0;34m�
 echo ╚══════════════════════════════════════════════════════════╝[0m
 if %char% GEQ 54 (
 	set/a char=54
-	Echo [3;2H[106;30mMax character Limit!
+	echo [3;2H[106;30mMax character Limit!
 ) else echo [3;2H[106;30m                    
-set/a char+=1
+if %Dupe%==1 set Dupe=0 && echo [5;25H[106;30mName in use
 getinput
 if %errorlevel%==27 goto :Home
 if %errorlevel%==13 (
+	for /f "usebackq delims=* tokens=1" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
+		if /I "%%A"=="%Name%" set Dupe=1 && goto :nMake
+	)
 	echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 	goto :Questions
 )
+set/a char+=1
 call Letter.bat %errorlevel%
 goto :nMake
 
 :Questions
 :: Remove below CLS when ready?
 :: have an escape into the blue area under the set name?
-cls
 set/a qna+=1
+:Qs
+cls
 echo Press "enter" on an empty question box to stop
 echo No special characters please, USE AT YOUR OWN RISK
 set "q%qna%= "
+if %Dupe%==1 (set Dupe=0 && echo Question already exists.) ELSE echo.[3;1H                        
 set/p "q%qna%=Question %qna%: "
 if "!q%qna%!"==" " (
 	echo [0m
 	cls
 	goto :Home
+)
+set line=-1
+if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists\%Name%.bat") do (
+	set "A=%%A"
+	set/a line*=-1
+	if /I "!A:~0,-1!"=="!q%qna%!" if !line!==1 set Dupe=1 && goto :Qs
 )
 set/p "a%qna%=Answer %qna%: "
 (
@@ -214,8 +228,10 @@ goto :Questions
 :Settings
 cls
 echo Nothing here yet...
-call Button 1 13 B0 "hello" X _Var_Box _Var_Hover
+call Button 1 13 B0 "Update" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
+if DEFINED LatestV (curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat")
+echo Update is currently unavailable
 pause> nul
 goto :Home
 
@@ -292,14 +308,14 @@ if %errorlevel%==1 call :mieq
 ::Goes to home Might want to change it to word "Home" odd letter button
 if %errorlevel%==2 goto :Home
 if %errorlevel%==3 call :pleq
-::All below open sets
-:: call :open.bat %Name(number)%
+::All below open setss
 if %errorlevel%==4 call :Learn 1
 if %errorlevel%==5 call :Learn 2
 if %errorlevel%==6 call :Learn 3
 if %errorlevel%==7 call :Learn 4
 if %errorlevel%==8 call :Learn 5
 if %errorlevel%==9 call :Learn 6
+if %errorlevel%==100 call :blankButtons
 goto :Sets2
 
 :pleq
@@ -331,12 +347,62 @@ set/a Nnums+=1
 exit/b
 
 :Learn
+echo [?25l[0;0H[0m                                                            
+echo [?25l[2;0H[0;34m╔══════════════════════════════════════════════════════════╗
+echo ║[106m                                                          [0;34m║
+echo ║[106m  [30m!Name%1!  [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╚══════════════════════════════════════════════════════════╝[0m
+echo.                                                            
+call Button 1 22 B0 "                        Study                         " 1 27 B0 "                         Edit                         " 1 32 B0 "                        Delete                        " X _Var_Box _Var_Hover
+getinput /m %_Var_Box% /h %_Var_Hover%s
+if %errorlevel%==2 echo Edit
+if %errorlevel%==3 goto :Delete
 set card=1
 set i=1
-if "!Name%1!"=="                                                      " (
+if "!Name%1!"=="%blank%" (
+	cls
 	echo Nothing here!
 	timeout 3 >nul
 	exit/b
+)
+if NOT EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
+	cls && echo.
+	echo ERROR# - File missing
+	echo Please report if the problem persists
+	pause> nul
+	exit/b 100
 )
 set Flines=0
 (
@@ -347,7 +413,7 @@ for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 )
 call "C:\Tutor\Files\Lists\!Name%1!.bat"
 set/a questions=%Flines%/2
-:: You better change this!!
+::: You better change this!!!!
 :flashcards
 mode 65,39> nul
 cls
@@ -368,5 +434,19 @@ if %errorlevel%==3 (
 	set/a i+=1
 	if !i! GTR %questions% set i=%questions%
 )
-if %errorlevel%==4 exit/b 100
+if %errorlevel%==4 exit/b 50
 goto :flashcards
+
+:Delete
+echo %time%
+if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" del "C:\Tutor\Files\Lists\!Name%1!.bat"
+for /F "usebackq tokens=1 delims=*" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
+	if %%A NEQ !Name%1! echo.%%A>>"C:\Tutor\Files\Lists\Replace.txt"
+)
+(
+type "C:\Tutor\Files\Lists\Replace.txt"
+)>"C:\Tutor\Files\Lists\Lists.txt"
+del "C:\Tutor\Files\Lists\Replace.txt"
+echo %time%
+pause
+exit/b 100
