@@ -1,6 +1,12 @@
+:: Shuffle feature
+:: Delete feature with option 2 del study sets
+:: make user unable to enter problem chars
+::
+
 :: [
 :: MAKE SURE THAT ALL FILES ARE INCLUDED!!!
 :: Put numbers next to ERROR# and make an error chart
+
 @echo off
 echo [?25l
 chcp 65001> nul
@@ -71,6 +77,11 @@ cd "C:\Tutor\Files"
 if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set LatestV=0 && title Tutor %cVer% - UPDATE AVAILABLE)
 ::%%~nxG
 :: Exit button?
+REM :top
+REM getinput
+REM echo %errorlevel%
+REM pause
+REM goto :top
 :Home
 mode 60,39> nul
 echo [?25l[0;0H[0m                                                            
@@ -305,10 +316,9 @@ echo [38;0H
 call Button 1 1 B0 " < " 26 1 B0 " H " 52 1 B0 " > " 1 7 B0 "%Name1%" 1 12 B0 "%Name2%" 1 17 B0 "%Name3%" 1 22 B0 "%Name4%" 1 27 B0 "%Name5%" 1 32 B0 "%Name6%" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 call :mieq
-::Goes to home Might want to change it to word "Home" odd letter button
 if %errorlevel%==2 goto :Home
 if %errorlevel%==3 call :pleq
-::All below open setss
+::All below open sets
 if %errorlevel%==4 call :Learn 1
 if %errorlevel%==5 call :Learn 2
 if %errorlevel%==6 call :Learn 3
@@ -387,7 +397,7 @@ echo ╚════════════════════════
 echo.                                                            
 call Button 1 22 B0 "                        Study                         " 1 27 B0 "                         Edit                         " 1 32 B0 "                        Delete                        " X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
-if %errorlevel%==2 echo Edit
+if %errorlevel%==2 goto :Edit
 if %errorlevel%==3 goto :Delete
 set card=1
 set i=1
@@ -417,27 +427,36 @@ set/a questions=%Flines%/2
 :flashcards
 mode 65,39> nul
 cls
-echo [?25l[0;0H Press "A" to go left, "D" to go right and "S" to flip the card
-echo  Press 0 to exit
+echo [?25l[0;0H Press arrow keys to flip the card.
+echo  Press "escape" to exit
 echo.
 if %card%==1 echo !q%i%!
 if %card%==-1 echo !a%i%!
-choice /c asd0 /n >nul
-if %errorlevel%==1 (
+echo.
+echo  %i%/%questions%
+getinput
+if %errorlevel%==293 (
 	set card=1
 	set/a i-=1
 	if !i! LSS 1 set i=1
 )
-if %errorlevel%==2 set/a card=%card%*-1
-if %errorlevel%==3 (
+if %errorlevel%==296 set/a card=%card%*-1
+if %errorlevel%==294 set/a card=%card%*-1
+if %errorlevel%==295 (
 	set card=1
 	set/a i+=1
 	if !i! GTR %questions% set i=%questions%
 )
-if %errorlevel%==4 exit/b 50
+if %errorlevel%==27 exit/b 50
 goto :flashcards
 
 :Delete
+cls
+echo Are you sure you want to delete 
+echo "!Name%1!"?
+echo Hold shift and press a key:
+choice /c YN /cs
+if %errorlevel%==2 exit/b 100
 echo %time%
 if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" del "C:\Tutor\Files\Lists\!Name%1!.bat"
 for /F "usebackq tokens=1 delims=*" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
@@ -450,3 +469,39 @@ del "C:\Tutor\Files\Lists\Replace.txt"
 echo %time%
 pause
 exit/b 100
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+:Edit
+exit/b 100
+:: UI Input
+set Flines=0
+for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
+	set/a Flines+=1
+)
+:: Doesn't work. Might want to use the render method
+for /L %%B in (1,1,%Flines%) do (
+	for /f "usebackq tokens=* delims=*" %%C in ("C:\Tutor\Files\Lists\!Name%1!.bat") do @echo [%%B;1 %%C
+)
+pause
+exit/b 100
+:: UI Action
+set/p fix=
+:: please change this
+set "question=something"
+:: "%question%"=="%%A" might need to have q/a and number
+for /f "usebackq tokens=* delims=*" %%A in ("List") do (
+	if "%question%"=="%%A" (
+		(
+		%fix%
+		)>>"C:\Tutor\Files\Lists\replace.txt"
+	) ELSE (
+		(
+		%%A
+		)>>"C:\Tutor\Files\Lists\replace.txt"
+	)
+	
+)
+(
+type "C:\Tutor\Files\Lists\replace.txt"
+)>"C:\Tutor\Files\Lists\!Name%1!.bat"
+del "C:\Tutor\Files\Lists\replace.txt"
