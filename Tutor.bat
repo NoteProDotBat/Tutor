@@ -32,7 +32,6 @@ if %errorlevel%==1 goto :Connection
 if %errorlevel%==3 exit
 if NOT EXIST "C:\Tutor" md C:\Tutor
 if NOT EXIST "C:\Tutor\Files" md C:\Tutor\Files
-:: There is a github direct download link! use that after you are done with Tutor.
 if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 	if %errorlevel%==2 (
 		echo Unable to finish downloads. Please try again later.
@@ -242,9 +241,10 @@ echo Nothing here yet...
 call Button 1 13 B0 "Update" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if DEFINED LatestV (curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat")
+echo.%nVer%>>"C:\Tutor\Files\CurrentVersion.txt"
 echo Update is currently unavailable
 pause> nul
-goto :Home
+goto :connection
 
 :Sets1
 set/a num=1
