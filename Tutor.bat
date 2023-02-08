@@ -241,7 +241,7 @@ echo Nothing here yet...
 call Button 1 13 B0 "Update" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if DEFINED LatestV (curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat")
-echo.%nVer%>>"C:\Tutor\Files\CurrentVersion.txt"
+echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
 echo Update is currently unavailable
 pause> nul
 goto :connection
