@@ -124,7 +124,7 @@ echo ║[46m                                                          [0;34m�
 echo ╚══════════════════════════════════════════════════════════╝[0m
 <"C:\Tutor\Files\Lists\recent.txt" set /p recent=
 set "Name1=%recent%"
-if "LatestV"=="1" (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
+if "%LatestV%"=="1" (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
 
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 call :Learn 1
