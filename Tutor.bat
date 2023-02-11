@@ -18,7 +18,7 @@ mode 60,39> nul
 
 title Tutor
 :Connection
-set LatestV=1
+set LatestV=0
 echo Testing Connection...
 ping github.com -n 1 -w 3000 > nul
 if %errorlevel%==1 (
@@ -238,10 +238,9 @@ goto :Questions
 
 :Settings
 cls
-echo Nothing here yet...
 call Button 1 13 B0 "Update" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
-if "LatestV"=="1" (
+if "%LatestV%"=="1" (
 	curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat"
 	echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
 ) ELSE (
