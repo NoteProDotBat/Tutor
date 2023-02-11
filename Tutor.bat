@@ -46,7 +46,7 @@ if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -s -o "C:\Tutor\Files\Box.bat" "http
 if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -k -s -o "C:\Tutor\Files\Button.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Button.bat")
 if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Getlen.bat")
 if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -k -s -o "C:\Tutor\Files\Letter.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Letter.bat")
-if NOT EXIST "C:\Tutor\Files\CurrentVersion.txt" (curl -k -s -o "C:\Tutor\Files\CurrentVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/CurrentVersion")
+if NOT EXIST "C:\Tutor\Files\CurrentVersion.txt" (curl -k -s -o "C:\Tutor\Files\CurrentVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/NewestVersion")
 curl -k -s -o "C:\Tutor\Files\NewestVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/NewestVersion"
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
 if NOT EXIST "C:\Tutor\Files\Lists\recent.txt" (
