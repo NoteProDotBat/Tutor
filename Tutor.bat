@@ -18,6 +18,7 @@ mode 60,39> nul
 
 title Tutor
 :Connection
+set LatestV=1
 echo Testing Connection...
 ping github.com -n 1 -w 3000 > nul
 if %errorlevel%==1 (
@@ -73,7 +74,7 @@ cd..
 cd "C:\Tutor\Files"
 <"CurrentVersion.txt" set /p cVer=
 <"NewestVersion.txt" set /p nVer=
-if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set LatestV=0 && title Tutor %cVer% - UPDATE AVAILABLE)
+if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set LatestV=1 && title Tutor %cVer% - UPDATE AVAILABLE)
 ::%%~nxG
 :: Exit button?
 REM :top
@@ -111,9 +112,9 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
-if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
-if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
-if DEFINED LatestV (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
@@ -123,7 +124,7 @@ echo ║[46m                                                          [0;34m�
 echo ╚══════════════════════════════════════════════════════════╝[0m
 <"C:\Tutor\Files\Lists\recent.txt" set /p recent=
 set "Name1=%recent%"
-if DEFINED LatestV (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
+if "LatestV"=="1" (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
 
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 call :Learn 1
@@ -240,10 +241,16 @@ cls
 echo Nothing here yet...
 call Button 1 13 B0 "Update" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
-if DEFINED LatestV (curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat")
-echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
-echo Update is currently unavailable
-pause> nul
+if "LatestV"=="1" (
+	curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat"
+	echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
+) ELSE (
+	echo.
+	echo.
+	echo Update is currently unavailable
+)
+
+timeout 5 >nul
 goto :connection
 
 :Sets1
@@ -423,7 +430,7 @@ for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 )
 call "C:\Tutor\Files\Lists\!Name%1!.bat"
 set/a questions=%Flines%/2
-::: You better change this!!!!
+::: Looking better but  you still need to have more study options and prevent spliting words
 :flashcards
 mode 65,39> nul
 cls
@@ -445,10 +452,87 @@ if %errorlevel%==294 set/a card=%card%*-1
 if %errorlevel%==295 (
 	set card=1
 	set/a i+=1
-	if !i! GTR %questions% set i=%questions%
+	if !i! GTR %questions% set i=1 && goto :ShPrep
 )
 if %errorlevel%==27 exit/b 50
 goto :flashcards
+
+:: Adding finnishing touches...
+:ShPrep
+if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt"
+if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt"
+if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" echo..>"C:\Tutor\Files\Lists\ShOrder.txt"
+set "numQs=%questions%"
+:: Swap to (%questions%,-1,1)?
+for /L %%A in (1,1,%questions%) do (
+	echo.%%A>>"C:\Tutor\Files\Lists\Shuffle.txt"
+)
+:Shuffle
+set/a line=0
+::change Shuffle to Numbers and ShuffleOrder to Shuffle?
+set/a var = %random% %% %numQs% + 1
+for /F "usebackq" %%A in ("C:\Tutor\Files\Lists\Shuffle.txt") do (
+	set "number=%%A"
+	call :ShOrder
+)
+if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" (
+	(
+	type "C:\Tutor\Files\Lists\ShReplace.txt"
+	)>"C:\Tutor\Files\Lists\Shuffle.txt"
+	del "C:\Tutor\Files\Lists\ShReplace.txt"
+)
+set/a numQs-=1
+if %numQs% LEQ 0 goto :ShStudy
+goto :Shuffle
+:ShOrder
+set/a line+=1
+if %line%==%var% (echo.%number%>>"C:\Tutor\Files\Lists\ShOrder.txt") ELSE (echo.%number%>>"C:\Tutor\Files\Lists\ShReplace.txt")
+exit/b 100
+
+:ShStudy
+:: get the numbers from the file ShuffleOrder and make that the q/a order
+mode 65,39> nul
+call :number
+cls
+echo [?25l[0;0H Press arrow keys to navigate the cards.
+echo  Press "escape" to exit
+echo.
+if %card%==1 echo !q%num%!
+if %card%==-1 echo !a%num%!
+echo.
+echo  %i%/%questions%
+getinput
+if %errorlevel%==293 (
+	set card=1
+	set/a i-=1
+	if !i! LSS 1 set i=1
+)
+if %errorlevel%==296 set/a card=%card%*-1
+if %errorlevel%==294 set/a card=%card%*-1
+if %errorlevel%==295 (
+	set card=1
+	set/a i+=1
+	if !i! GTR %questions% (
+	set i=1
+	cls
+	echo [?25l[0;0H Press arrow keys to navigate the cards.
+	echo  Press "escape" to exit
+	echo.
+	if %card%==1 echo !q%num%!
+	if %card%==-1 echo !a%num%!
+	echo.
+	echo  %i%/%questions%   Shuffling terms...
+	goto :ShPrep
+	)
+)
+if %errorlevel%==27 exit/b 50
+goto :ShStudy
+
+:number
+for /f "usebackq skip=%i%" %%A in ("C:\Tutor\Files\Lists\ShOrder.txt") do (
+	set "num=%%A"
+	exit/b
+)
 
 :Delete
 cls
