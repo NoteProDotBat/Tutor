@@ -74,7 +74,7 @@ cd..
 cd "C:\Tutor\Files"
 <"CurrentVersion.txt" set /p cVer=
 <"NewestVersion.txt" set /p nVer=
-if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set LatestV=1 && title Tutor %cVer% - UPDATE AVAILABLE)
+if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set "LatestV=1" && title Tutor %cVer% - UPDATE AVAILABLE)
 ::%%~nxG
 :: Exit button?
 REM :top
@@ -112,9 +112,9 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
-if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
-if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
-if "LatestV"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "%LatestV%"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "%LatestV%"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
+if "%LatestV%"=="1" (echo ║[104m                                                          [0;34m║) ELSE (echo ║[106m                                                          [0;34m║)
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
