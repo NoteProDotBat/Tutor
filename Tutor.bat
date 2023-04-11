@@ -605,10 +605,12 @@ exit/b 100
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 
 :Edit
+mode 65,39>nul
 cls
 echo Under construction
 echo Press any key to return...
 pause>nul
+exit/b 100
 for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 	set/a Flines+=1
 )
