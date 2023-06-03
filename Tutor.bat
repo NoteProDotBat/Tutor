@@ -41,7 +41,7 @@ if NOT EXIST "C:\Tutor\Tutor.bat" (
 		type %~f0
 	)>"C:\Tutor\Tutor.bat"
 )
-if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -k s -o "C:\Tutor\Files\GetInput.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/GetInput.exe")
+if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -k -s -o "C:\Tutor\Files\GetInput.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/GetInput.exe")
 if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -k -s -o "C:\Tutor\Files\Box.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Box.bat")
 if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -k -s -o "C:\Tutor\Files\Button.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Button.bat")
 if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Getlen.bat")
