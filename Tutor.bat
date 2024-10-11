@@ -331,7 +331,7 @@ if %errorlevel%==1 (
 	if "%LatestV%"=="1" (
 		ping github.com -n 1 -w 3000 > nul
 		if !errorlevel!==1 cls & echo ERROR#005 - Unable to update, please try again. & pause & goto:Settings
-		start cmd.exe /R "@echo off & title Update Tutor & cls & timeout 1 /NOBREAK >nul && curl -k -s -o "C:\Tutor\Tutor.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat""
+		start cmd.exe /R "@echo off & title Update Tutor & cls & echo Updating Tutor... & timeout 1 /NOBREAK >nul && curl -k -s -o "C:\Tutor\Tutor.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat" && echo Update complete. & echo Launching Tutor. & timeout 1 /NOBREAK >nul && start cmd.exe /R "C:\Tutor\Tutor.bat""
 		echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
 		exit
 	) ELSE (
