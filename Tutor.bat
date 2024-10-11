@@ -13,7 +13,7 @@
 ::             002 - Accessing Empty File                                                        ::
 ::             003 - File Creation Failed                                                        ::
 ::             004 - File Deletion Failed                                                        ::
-::             005 -                                                                             ::
+::             005 - Bad Internet Connection                                                     ::
 ::             006 -                                                                             ::
 ::             007 -                                                                             ::
 ::             008 -                                                                             ::
@@ -69,7 +69,7 @@ echo Testing Connection...
 ping github.com -n 1 -w 3000 > nul
 if %errorlevel%==1 (
 	cls
-	echo No internet connection!
+	echo ERROR#005 - Bad internet connection.
 	echo Press "1" to retry
 	echo Press "2" to continue
 	echo Press "3" to exit
@@ -329,8 +329,11 @@ call Button 1 13 B0 "Update" 1 5 B0 "Delete Tutor" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 (
 	if "%LatestV%"=="1" (
-		curl -k -s -o "C:\Tutor\Tutor.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat"
+		ping github.com -n 1 -w 3000 > nul
+		if !errorlevel!==1 cls & echo ERROR#005 - Unable to update, please try again. & pause & goto:Settings
+		start cmd.exe /R "@echo off & title Update Tutor & cls & timeout 1 /NOBREAK >nul && curl -k -s -o "C:\Tutor\Tutor.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat""
 		echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
+		exit
 	) ELSE (
 		echo [5EUpdate is currently unavailable
 		timeout 3 >nul
