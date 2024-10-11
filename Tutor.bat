@@ -82,7 +82,7 @@ if NOT EXIST "C:\Tutor\Files" md C:\Tutor\Files
 if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 	if %errorlevel%==2 (
 		echo Unable to finish downloads. Please try again later.
-		echo ERROR#000 - File missing
+		echo ERROR#000 - File missing.
 		timeout 3 /NOBREAK > nul
 		goto:Connection
 	)
@@ -335,7 +335,7 @@ if %errorlevel%==1 (
 		echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
 		exit
 	) ELSE (
-		echo [5EUpdate is currently unavailable
+		echo [5EYou already have the latest version of Tutor.
 		timeout 3 >nul
 	)
 )
@@ -354,7 +354,7 @@ if %errorlevel%==2 (
 	if !errorlevel!==1 (
 		del "C:\Tutor"
 		if EXIST "C:\Tutor" (
-			echo ERROR#004 Failed to delete Tutor
+			echo ERROR#004 - Failed to delete Tutor.
 			echo Press 1 to retry
 			echo Press 2 to close
 			choice /c 12 /n
@@ -564,6 +564,7 @@ if %errorlevel%==27 goto:Home
 
 set smartStudy=-1
 set swapStudy=-1
+set mixed=0
 
 :LearnMethod
 echo [23;0H[0;34m╠═════════════════════════════╦════════════════════════════╣
@@ -614,7 +615,7 @@ echo ║[106m                                                          [0;34m�
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
 
-call Button 1 23 %color% "                       Study Back                     " 1 28 %color% "                      Study Front                     " 1 33 %color% "                       Study Both                     " X _Var_Box _Var_Hover
+call Button 1 23 %color% "                      Study Front                     " 1 28 %color% "                       Study Back                     " 1 33 %color% "                       Study Both                     " X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 
 :: Study front
@@ -622,8 +623,7 @@ if %errorlevel%==1 set/a studySide = 1
 :: Study back
 if %errorlevel%==2 set/a studySide = -1
 :: Study both
-:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::MAKE SURE TO CONSTANTLY CHANGE %studySide%
-if %errorlevel%==3 set/a mixed = 1 && set/a studySide = %random% %% 2
+if %errorlevel%==3 set/a mixed = 1
 if %errorlevel%==27 goto:Home
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::Dont forget about %smartStudy%
@@ -638,6 +638,10 @@ if %studyType%==4 echo hi
 
 :FlashcardSetup
 :: The side of the card
+if !mixed!==1 (
+	set/a studySide = !random! %% 2
+	if !studySide!==0 set/a studySide-=1
+)
 set/a card=1 * %studySide%
 set i=1
 if "!Name%1!"=="%blank%" (
@@ -648,7 +652,7 @@ if "!Name%1!"=="%blank%" (
 )
 if NOT EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
 	cls && echo.
-	echo ERROR#001 - File missing
+	echo ERROR#001 - File missing.
 	echo Please report if the problem persists
 	pause> nul
 	exit/b 100
@@ -677,27 +681,23 @@ if %card%==-1 echo !a%i%!
 echo.
 echo  %i%/%questions%
 getinput
-if %errorlevel%==293 (
-	set/a card=1 * %studySide%
-	set/a i-=1
-	if !i! LSS 1 set i=1
-)
-if %errorlevel%==296 set/a card=%card%*-1
-if %errorlevel%==294 set/a card=%card%*-1
+if %errorlevel%==293 call:leftCard
+if %errorlevel%==296 set/a card*=-1
+if %errorlevel%==294 set/a card*=-1
+if %errorlevel%==13 set/a card*=-1
+if %errorlevel%==32 set/a card*=-1
 if %errorlevel%==295 (
-	set/a card=1 * %studySide%
-	set/a i+=1
+	call:rightCard
 	if !i! GTR %questions% (
-	set i=1
-	cls
-	echo [?25l[0;0H Press arrow keys to navigate the cards.
-	echo  Press "escape" to exit
-	echo.
-	if %card%==1 echo !q%num%!
-	if %card%==-1 echo !a%num%!
-	echo.
-	echo  %i%/%questions%   Shuffling terms...
-	goto:ShPrep
+		set i=1
+		cls
+		echo [?25l[0;0H Press arrow keys to navigate the cards.
+		echo  Press "escape" to exit
+		echo.
+		echo Shuffling %questions% terms.
+		echo.
+		echo  %i%/%questions%   Shuffling terms...
+		goto:ShPrep
 	)
 )
 if %errorlevel%==27 exit/b 50
@@ -749,33 +749,29 @@ if %card%==-1 echo !a%num%!
 echo.
 echo  %i%/%questions%
 getinput
-if %errorlevel%==293 (
-	set/a card=1 * %studySide%
-	set/a i-=1
-	if !i! LSS 1 set i=1
-)
-if %errorlevel%==296 set/a card=%card%*-1
-if %errorlevel%==294 set/a card=%card%*-1
+if %errorlevel%==293 call:leftCard
+if %errorlevel%==296 set/a card*=-1
+if %errorlevel%==294 set/a card*=-1
+if %errorlevel%==13 set/a card*=-1
+if %errorlevel%==32 set/a card*=-1
 if %errorlevel%==295 (
-	set/a card=1 * %studySide%
-	set/a i+=1
+	call:rightCard
 	if !i! GTR %questions% (
-	set i=1
-	cls
-	echo [?25l[0;0H Press arrow keys to navigate the cards.
-	echo  Press "escape" to exit
-	echo.
-	if %card%==1 echo !q%num%!
-	if %card%==-1 echo !a%num%!
-	echo.
-	echo  %i%/%questions%   Shuffling terms...
-	goto:ShPrep
+		set i=1
+		cls
+		echo [?25l[0;0H Press arrow keys to navigate the cards.
+		echo  Press "escape" to exit
+		echo.
+		echo Shuffling %questions% terms.
+		echo.
+		echo  %i%/%questions%   Shuffling terms...
+		goto:ShPrep
 	)
 )
 if %errorlevel%==27 (
-	if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt"
-	if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt"
-	if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" del"C:\Tutor\Files\Lists\ShOrder.txt"
+	if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt" > nul
+	if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt" > nul
+	if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" del"C:\Tutor\Files\Lists\ShOrder.txt" > nul
 	exit/b 50
 )
 goto:ShStudy
@@ -785,6 +781,25 @@ for /f "usebackq skip=%i%" %%A in ("C:\Tutor\Files\Lists\ShOrder.txt") do (
 	set "num=%%A"
 	exit/b
 )
+
+:leftCard
+if !mixed!==1 (
+	set/a studySide = !random! %% 2
+	if !studySide!==0 set/a studySide-=1
+)
+set/a card=1 * %studySide%
+set/a i-=1
+if !i! LSS 1 set i=1
+exit/b 100
+
+:rightCard
+if !mixed!==1 (
+	set/a studySide = !random! %% 2
+	if !studySide!==0 set/a studySide-=1
+)
+set/a card=1 * %studySide%
+set/a i+=1
+exit/b 100
 
 :: ONLY CALL THIS LABEL
 :Delete
@@ -804,7 +819,7 @@ type "C:\Tutor\Files\Lists\Replace.txt"
 )>"C:\Tutor\Files\Lists\Lists.txt"
 del "C:\Tutor\Files\Lists\Replace.txt"
 if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
-	echo ERROR#004 - Failed to delete "!Name%1!"
+	echo ERROR#004 - Failed to delete "!Name%1!".
 	echo Press 1 to retry
 	choice /c 12 /n
 	if !errorlevel!==1 goto:Delete %1
