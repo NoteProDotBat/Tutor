@@ -1,6 +1,57 @@
 :: make user unable to enter problem chars
 :: [
+:: [y;xH
 :: Put numbers next to ERROR# and make an error chart
+
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::                                                                                               ::
+::                                       Tutor Error Chart                                       ::
+::                                                                                               ::
+::    Error#                                                                                     ::
+::             000 - Missing Source File                                                         ::
+::             001 - Missing Study Set File                                                      ::
+::             002 - Accessing Empty File                                                        ::
+::             003 - File Creation Failed                                                        ::
+::             004 - File Deletion Failed                                                        ::
+::             005 -                                                                             ::
+::             006 -                                                                             ::
+::             007 -                                                                             ::
+::             008 -                                                                             ::
+::                                                                                               ::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::                                                                                               :: ┬ ├ └ │
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::                                                                                               ::
+::                                         Future Plans                                          ::
+::                                                                                               ::
+::    #0 - Edit study sets                                                                       ::
+::    #1 ┬ Add study set preview                                                                 ::
+::       └ #1.0 - Show number of questions and the first question                                ::
+::    #2 ┬ Better UI for creating sets                                                           ::
+::       ├ #2.0 - Set name and questions on the same screen                                      ::
+::       ├ #2.1 ┬ Improve the use of GetInput                                                    ::
+::       │      └ #1.1.0 - ctrl + backspace and more                                             ::
+::       ├ #2.2 - scroll the questions up                                                        ::
+::       └ #2.3 ┬ edit questions after entering them                                             ::
+::              └ #2.3.0 - Use arrow keys to scroll through questions                            ::
+::    #3 - Conjugation chart for learning languages                                              ::
+::    #4 - Better settings UI and more options                                                   ::
+::    #5 - Remove/change most recent set after set deletion                                      ::
+::    #6 - Better update and delete process                                                      ::
+::    #7 ┬ Better UI for studying sets                                                           ::
+::       └ #7.0 - questions are on flashcards                                                    ::
+::    #8 - More error#s                                                                          ::
+::                                                                                               ::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::                                                                                               ::
+::                                        Potential Plans                                        ::
+::                                                                                               ::
+::    #0 ┬ Speak questions and answers                                                           ::
+::       └ #0.0 - Create voice settings (change voice & enable/disable)                          ::
+::    #1 - Create Tutor in another language                                                      ::
+::                                                                                               ::
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 @echo off
 echo [?25l
@@ -22,7 +73,7 @@ if %errorlevel%==1 (
 	echo Press "1" to retry
 	echo Press "2" to continue
 	echo Press "3" to exit
-	choice /c 123 /n /d 1 /t 5
+	choice /c 123 /n /d 1 /t 10
 )
 if %errorlevel%==1 goto:Connection
 if %errorlevel%==3 exit
@@ -31,6 +82,7 @@ if NOT EXIST "C:\Tutor\Files" md C:\Tutor\Files
 if NOT EXIST "C:\Tutor\Files\Batbox.exe" (
 	if %errorlevel%==2 (
 		echo Unable to finish downloads. Please try again later.
+		echo ERROR#000 - File missing
 		timeout 3 /NOBREAK > nul
 		goto:Connection
 	)
@@ -41,12 +93,9 @@ if NOT EXIST "C:\Tutor\Tutor.bat" (
 		type %~f0
 	)>"C:\Tutor\Tutor.bat"
 )
-if NOT EXIST "C:\Tutor\Files\GetInput.exe" (curl -k -s -o "C:\Tutor\Files\GetInput.exe" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/GetInput.exe")
-if NOT EXIST "C:\Tutor\Files\Box.bat" (curl -k -s -o "C:\Tutor\Files\Box.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Box.bat")
-if NOT EXIST "C:\Tutor\Files\Button.bat" (curl -k -s -o "C:\Tutor\Files\Button.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Button.bat")
-if NOT EXIST "C:\Tutor\Files\Getlen.bat" (curl -k -s -o "C:\Tutor\Files\Getlen.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Getlen.bat")
-if NOT EXIST "C:\Tutor\Files\Letter.bat" (curl -k -s -o "C:\Tutor\Files\Letter.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Letter.bat")
-if NOT EXIST "C:\Tutor\Files\CurrentVersion.txt" (curl -k -s -o "C:\Tutor\Files\CurrentVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/NewestVersion")
+for %%A in (GetInput.exe, Box.bat, Button.bat, Getlen.bat, Letter.bat, CurrentVersion.txt) do (
+	if NOT EXIST "C:\Tutor\Files\%%A" (curl -k -s -o "C:\Tutor\Files\%%A" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/%%A")
+)
 curl -k -s -o "C:\Tutor\Files\NewestVersion.txt" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/NewestVersion"
 if NOT EXIST "C:\Tutor\Files\Lists" md C:\Tutor\Files\Lists
 if NOT EXIST "C:\Tutor\Files\Lists\recent.txt" (
@@ -72,10 +121,17 @@ if NOT EXIST "C:\Tutor\Files\Lists\Tutor Tutorial                               
 cls
 cd..
 cd "C:\Tutor\Files"
+
 :top
 <"CurrentVersion.txt" set /p cVer=
 <"NewestVersion.txt" set /p nVer=
+if "%cVer%"=="404: Not Found" (
+	echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
+	set "cVer=%nVer%"
+)
 if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set "LatestV=1" && title Tutor %cVer% - UPDATE AVAILABLE)
+echo [0m
+cls
 ::%%~nxG
 :: Exit button?
 REM :top
@@ -131,11 +187,11 @@ if %errorlevel%==2 goto:Sets1
 if %errorlevel%==3 goto:Make
 if %errorlevel%==4 goto:Settings
 if %errorlevel%==5 (
-	echo [34;2H Created by [101;93mNotePro[0m                                       
-	echo [35;2H                                                          
-	echo [36;2H Special thanks to [101;93mKotsasmin[0m                              
-	echo [37;2H                                                          
-	timeout 3 /NOBREAK > nul
+	echo [34;2H Created by:                              [101;93mNotePro[0m         
+	echo [35;2H Batbox by:                               [101;93mDarkBatcher[0m     
+	echo [36;2H GetInput by:                             [101;93mAacini[0m          
+	echo [37;2H Special thanks to:                       [101;93mKotsasmin[0m       
+	timeout 5 /NOBREAK > nul
 )	
 goto:Home
 
@@ -146,20 +202,14 @@ set /a qna=0
 for /L %%A in (1,1,54) do set "L%%A= "
 set/a char=0
 cls
-
-:nMake
-if %char%==55 (echo [1;1H[0m Enter a set name 54/54 characters remaining) else echo [1;1H[0m Enter a set name %char%/54 characters remaining 
-::do a fancy escape feature??
-set "Name=%L1%%L2%%L3%%L4%%L5%%L6%%L7%%L8%%L9%%L10%%L11%%L12%%L13%%L14%%L15%%L16%%L17%%L18%%L19%%L20%%L21%%L22%%L23%%L24%%L25%%L26%%L27%%L28%%L29%%L30%%L31%%L32%%L33%%L34%%L35%%L36%%L37%%L38%%L39%%L40%%L41%%L42%%L43%%L44%%L45%%L46%%L47%%L48%%L49%%L50%%L51%%L52%%L53%%L54%"
-set/a xPos=%char%+4
 echo [2;0H[0;34m╔══════════════════════════════════════════════════════════╗
 echo ║[106m                                                          [0;34m║
-echo ║[106m  [30m%Name%  [0;34m║
+echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
-echo ║[106m                    Press esc to exit                     [0;34m║
+echo ║[106m                    Press ESC to exit                     [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
@@ -189,24 +239,44 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
+
+:nMake
+if %char%==55 (echo [1;1H[0m Enter a set name 54/54 characters remaining) else echo [1;1H[0m Enter a set name %char%/54 characters remaining 
+set "Name=%L1%%L2%%L3%%L4%%L5%%L6%%L7%%L8%%L9%%L10%%L11%%L12%%L13%%L14%%L15%%L16%%L17%%L18%%L19%%L20%%L21%%L22%%L23%%L24%%L25%%L26%%L27%%L28%%L29%%L30%%L31%%L32%%L33%%L34%%L35%%L36%%L37%%L38%%L39%%L40%%L41%%L42%%L43%%L44%%L45%%L46%%L47%%L48%%L49%%L50%%L51%%L52%%L53%%L54%"
+set/a xPos=%char%+4
+if NOT %errorlevel%==0 (
+	echo.[4;4H[106m[30m%Name%
+)
+
 if %char% GEQ 54 (
 	set/a char=54
 	echo [3;2H[106;30mMax character Limit!
-) else echo [3;2H[106;30m                    
-if %Dupe%==1 set Dupe=0 && echo [5;25H[106;30mName in use
-::echo [?25h[4;5H[4Chi Problem with Getinput
-getinput
+) else (
+	echo [3;2H[106;30m                    
+	echo [4;%xPos%H█
+)
+if %Dupe%==1 (
+	set Dupe=0
+	echo [5;25H[106;30mName in use
+) else (
+	 if NOT %errorlevel%==0 echo.[5;25H           
+)
+
+getinput /T 0
 echo [?25l
+
 if %errorlevel%==27 goto:Home
 if %errorlevel%==13 (
+	if "%Name%"=="                                                      " set Dupe=1 && goto:nMake
 	for /f "usebackq delims=* tokens=1" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
 		if /I "%%A"=="%Name%" set Dupe=1 && goto:nMake
 	)
-	echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 	goto:Questions
 )
-set/a char+=1
-call Letter.bat %errorlevel%
+if NOT %errorlevel%==0 (
+	set/a char+=1
+	call Letter.bat %errorlevel%
+)
 goto:nMake
 
 :Questions
@@ -216,15 +286,25 @@ echo [?25h
 set/a qna+=1
 :Qs
 cls
-echo Press "enter" on an empty question box to stop
-echo No special characters please, USE AT YOUR OWN RISK
+echo Press "enter" on an empty question box to stop.
+echo Please Refrain from using: ^^! and %%
 set "q%qna%= "
 if %Dupe%==1 (set Dupe=0 && echo Question already exists.) ELSE echo.[3;1H                        
 set/p "q%qna%=Question %qna%:[1E"
 if "!q%qna%!"==" " (
-	echo [0m[?25l
-	cls
-	goto:Home
+	if %qna% GEQ 4 (
+		echo [0m[?25l
+		cls
+		goto:Home
+	) else (
+		cls
+		echo You do not have at least 4 questions.
+		echo Press "1" to exit without saving
+		echo Press "2" to continue creating
+		choice /c 12 /n
+		if !errorlevel!==1 if %qna% GTR 1 (goto:Delete %Name%) ELSE goto:top
+		goto:Qs
+	)
 )
 set line=-1
 if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists\%Name%.bat") do (
@@ -233,53 +313,65 @@ if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists
 	if /I "!A:~0,-1!"=="!q%qna%!" if !line!==1 set Dupe=1 && goto:Qs
 )
 set/p "a%qna%=Answer %qna%:[1E"
+if NOT exist "C:\Tutor\Files\Lists\%Name%.bat" echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 (
 echo set "q%qna%=!q%qna%!"
 echo set "a%qna%=!a%qna%!"
 )>>"C:\Tutor\Files\Lists\%Name%.bat"
 goto:Questions
 
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: update the app in a new instance and update all files
+:: also update the Tutor.bat file so that you know what version of the main file you are using if you are opening an older version of the main file
+:: or you can create a launcher that allows the user to choose the download location and ... you know what follows
 :Settings
 cls
 call Button 1 13 B0 "Update" 1 5 B0 "Delete Tutor" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 (
 	if "%LatestV%"=="1" (
-		curl -k -s -o "%~f0" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat"
+		curl -k -s -o "C:\Tutor\Tutor.bat" "https://raw.githubusercontent.com/NoteProDotBat/Tutor/main/Tutor.bat"
 		echo.%nVer%>"C:\Tutor\Files\CurrentVersion.txt"
 	) ELSE (
 		echo [5EUpdate is currently unavailable
+		timeout 3 >nul
 	)
-	goto:connection
 )
-
 if %errorlevel%==2 (
 	cls
 	echo.
 	echo Are you sure you want to delete Tutor?
 	echo Hold shift and press a key:
-	choice /c YN /cs /n
-	if %errorlevel%==2 goto:Settings
+	choice /c YN /cs
+	if !errorlevel!==2 goto:Settings
 	cls
 	echo.
 	echo Would you like to delete all study sets?
 	echo Hold shift and press a key:
-	choice /c YN /cs /n
-	if %errorlevel%==1 del "C:\Tutor"
-	if %errorlevel%==2 (
+	choice /c YN /cs
+	if !errorlevel!==1 (
+		del "C:\Tutor"
+		if EXIST "C:\Tutor" (
+			echo ERROR#004 Failed to delete Tutor
+			echo Press 1 to retry
+			echo Press 2 to close
+			choice /c 12 /n
+			if !errorlevel!==1 goto:Settings
+			exit
+		) else echo It seems you opened Tutor from another directory. Close this window to finish.
+		pause>nul
+	)
+	if !errorlevel!==2 (
+		move "C:\Tutor\Files\Lists" "C:\Tutor\"
+		start cmd.exe /K "@echo off & title Remaining Files & cls & timeout 1 /NOBREAK >nul && echo Close this window when done. & echo. & echo --Any Message Below Here Is An Error-- & echo. & for /R "C:\Tutor" %%A in (*) do (@echo Failed to delete %%A)"
+		start cmd.exe /R "@echo off & title Move Study Sets & cls & timeout 1 /NOBREAK >nul && move C:\Tutor\Lists C:\Tutor\Files\ & echo. & echo --Any Message Above Here Is An Error-- & echo. & echo Deletion complete. & pause"
+		for /R "C:\Tutor\Files" %%A in (*) do del %%A
 		del "C:\Tutor\Tutor.bat"
-		del "C:\Tutor\Files\Batbox.exe"
-		del "C:\Tutor\Files\Box.bat"
-		del "C:\Tutor\Files\Button.bat"
-		del "C:\Tutor\Files\CurrentVersion.txt"
-		del "C:\Tutor\Files\GetInput.exe"
-		del "C:\Tutor\Files\Getlen.bat"
-		del "C:\Tutor\Files\Letter.bat"
-		del "C:\Tutor\Files\NewestVersion.txt"
+		pause
+		exit
 	)
 )
-
-timeout 5 >nul
+:: interesting command: start cmd.exe /R "@echo off && timeout 1 /NOBREAK >nul && for %A in (GetInput.exe, Box.bat, Button.bat, Getlen.bat, Letter.bat, Batbox.exe) do (if EXIST %A echo ERROR#004 - Failed to delete %A && timeout 1 >nul)"
+cls
 goto:connection
 
 :Sets1
@@ -291,14 +383,27 @@ for /f "usebackq delims=* tokens=1 " %%G in ("C:\Tutor\Files\Lists\Lists.txt") d
 	@set "sName=%%G"
 	call:Work1
 )
+set/a Flines=0
+for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
+	set/a Flines+=1
+)
+set/a pages = %Flines% / 6 + 1
+set/a page = 1
 set/a numChck=%num%-6
 goto:sets3
 
+
 :Sets2
 set/a Nnums=1
-if %sNum% LEQ 0 (
+if %sNum% == 0 (
 	set/a sNum=0
-	for /f "usebackq delims=* tokens=1 " %%G in ("C:\Tutor\Files\Lists\Lists.txt") do (
+	for /f "usebackq delims=* tokens=1" %%G in ("C:\Tutor\Files\Lists\Lists.txt") do (
+		@set "sName=%%G"
+		call:Work2
+	)
+) ELSE if %sNum% LSS 0 (
+	set/a sNum=%pages% * 6 - 6
+	for /f "usebackq delims=* tokens=1" %%G in ("C:\Tutor\Files\Lists\Lists.txt") do (
 		@set "sName=%%G"
 		call:Work2
 	)
@@ -309,6 +414,8 @@ if %sNum% LEQ 0 (
 	)
 )
 
+:: make %page% use an escape
+:: Create page numbers and page loop
 :sets3
 mode 60,39> nul
 echo [?25l[0;0H[0;34m╔═══════╗                ╔═══════╗                 [0;34m╔═══════╗
@@ -348,7 +455,8 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
-echo [38;0H                                                            
+echo [38;0H                           %page% /                         
+echo [38;31H%pages%
 call Button 1 1 B0 " < " 26 1 B0 " H " 52 1 B0 " > " 1 7 B0 "%Name1%" 1 12 B0 "%Name2%" 1 17 B0 "%Name3%" 1 22 B0 "%Name4%" 1 27 B0 "%Name5%" 1 32 B0 "%Name6%" X _Var_Box _Var_Hover
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==1 call:mieq
@@ -365,13 +473,26 @@ if %errorlevel%==100 call:blankButtons
 goto:Sets2
 
 :pleq
-set/a sNum+=6
-set/a nSix=%num%/6*6
+set/a page+=1
+if %page% GTR %pages% (
+	set/a page=1
+	set/a sNum=0
+) else (
+	set/a sNum+=6
+	set/a nSix=%num%/6*6
+)
 if %nSix% LEQ %num% if %sNum% GEQ %numChck% call:blankButtons
 exit/b
 
 :mieq
-set/a sNum-=6
+if %page% GTR 1 (
+	set/a page-=1
+	set/a sNum-=6
+) else (
+	set/a page=%pages%
+	set/a sNum=6 * %pages% - 6
+	call:blankButtons
+)
 exit/b
 
 :blankButtons
@@ -384,8 +505,8 @@ set "Name%num%=%sName%"
 set "pName%num%=%sName%"
 set/a num+=1
 exit/b
-
 :work2
+
 if "%sName%"=="" set "sName=%blank%"
 set "Name%Nnums%=%sName%"
 set/a Nnums+=1
@@ -401,7 +522,7 @@ echo ║[106m                                                          [0;34m�
 echo ║[46m                                                          [0;34m║
 echo ╠══════════════════════════════════════════════════════════╣
 echo ║[106m                                                          [0;34m║
-echo ║[106m                                                          [0;34m║
+echo ║[106m                    Press ESC to exit                     [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
 echo ║[106m                                                          [0;34m║
@@ -432,10 +553,89 @@ echo ║[46m                                                          [0;34m�
 echo ╚══════════════════════════════════════════════════════════╝[0m
 echo.                                                            
 call Button 1 22 B0 "                        Study                         " 1 27 B0 "                         Edit                         " 1 32 B0 "                        Delete                        " X _Var_Box _Var_Hover
+
 getinput /m %_Var_Box% /h %_Var_Hover%s
 if %errorlevel%==2 goto:Edit
 if %errorlevel%==3 goto:Delete
-set card=1
+if %errorlevel%==27 goto:Home
+
+set smartStudy=-1
+set swapStudy=-1
+
+:LearnMethod
+echo [23;0H[0;34m╠═════════════════════════════╦════════════════════════════╣
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[46m                             [0;34m║[46m                            [0;34m║
+echo ╠═════════════════════════════╬════════════════════════════╣
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[106m                             [0;34m║[106m                            [0;34m║
+echo ║[46m                             [0;34m║[46m                            [0;34m║
+echo ╠═════════════════════════════╩════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╚══════════════════════════════════════════════════════════╝[0m
+
+if %smartStudy%==-1 (
+	set "color=B0"
+) else (
+	set "color=90"
+)
+
+call Button 1 23 B0 "        Flashcards       " 31 23 B0 "     Multiple Choice    " 1 28 B0 "     Written Response    " 31 28 B0 "       Mixed Study      " 1 33 %color% "   (bool)             Smart Study            (bool)   " X _Var_Box _Var_Hover
+getinput /m %_Var_Box% /h %_Var_Hover%s
+
+if %errorlevel%==5 set/a smartStudy *= -1 && goto:LearnMethod
+if %errorlevel%==27 goto:Home
+set "studyType=%errorlevel%"
+:: Pass %smartStudy% into the chosen study method? (note: %smartStudy% is local)
+
+echo [23;0H[0;34m╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╠══════════════════════════════════════════════════════════╣
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[106m                                                          [0;34m║
+echo ║[46m                                                          [0;34m║
+echo ╚══════════════════════════════════════════════════════════╝[0m
+
+call Button 1 23 %color% "                       Study Back                     " 1 28 %color% "                      Study Front                     " 1 33 %color% "                       Study Both                     " X _Var_Box _Var_Hover
+getinput /m %_Var_Box% /h %_Var_Hover%s
+
+:: Study front
+if %errorlevel%==1 set/a studySide = 1
+:: Study back
+if %errorlevel%==2 set/a studySide = -1
+:: Study both
+:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::MAKE SURE TO CONSTANTLY CHANGE %studySide%
+if %errorlevel%==3 set/a mixed = 1 && set/a studySide = %random% %% 2
+if %errorlevel%==27 goto:Home
+
+::::::::::::::::::::::::::::::::::::::::::::::::::Dont forget about %smartStudy%
+:: Flashcards
+if %studyType%==1 goto:FlashcardSetup
+:: Multiple choice
+if %studyType%==2 echo hi
+:: Written
+if %studyType%==3 echo hi
+:: Mixed
+if %studyType%==4 echo hi
+
+:FlashcardSetup
+:: The side of the card
+set/a card=1 * %studySide%
 set i=1
 if "!Name%1!"=="%blank%" (
 	cls
@@ -461,6 +661,7 @@ for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 :: Change this so edit es easier to code?
 call "C:\Tutor\Files\Lists\!Name%1!.bat"
 set/a questions=%Flines%/2
+
 ::: Looking better but you still need to have more study options and prevent spliting words
 :flashcards
 mode 65,39> nul
@@ -474,14 +675,14 @@ echo.
 echo  %i%/%questions%
 getinput
 if %errorlevel%==293 (
-	set card=1
+	set/a card=1 * %studySide%
 	set/a i-=1
 	if !i! LSS 1 set i=1
 )
 if %errorlevel%==296 set/a card=%card%*-1
 if %errorlevel%==294 set/a card=%card%*-1
 if %errorlevel%==295 (
-	set card=1
+	set/a card=1 * %studySide%
 	set/a i+=1
 	if !i! GTR %questions% (
 	set i=1
@@ -504,7 +705,7 @@ if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.tx
 if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt"
 if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" echo..>"C:\Tutor\Files\Lists\ShOrder.txt"
 set "numQs=%questions%"
-:: Swap to (%questions%,-1,1)? Seems to be working fine though
+
 for /L %%A in (1,1,%questions%) do (
 	echo.%%A>>"C:\Tutor\Files\Lists\Shuffle.txt"
 )
@@ -546,14 +747,14 @@ echo.
 echo  %i%/%questions%
 getinput
 if %errorlevel%==293 (
-	set card=1
+	set/a card=1 * %studySide%
 	set/a i-=1
 	if !i! LSS 1 set i=1
 )
 if %errorlevel%==296 set/a card=%card%*-1
 if %errorlevel%==294 set/a card=%card%*-1
 if %errorlevel%==295 (
-	set card=1
+	set/a card=1 * %studySide%
 	set/a i+=1
 	if !i! GTR %questions% (
 	set i=1
@@ -582,6 +783,7 @@ for /f "usebackq skip=%i%" %%A in ("C:\Tutor\Files\Lists\ShOrder.txt") do (
 	exit/b
 )
 
+:: ONLY CALL THIS LABEL
 :Delete
 cls
 echo Are you sure you want to delete
@@ -589,7 +791,7 @@ echo "!Name%1!"?
 echo Hold shift and press a key:
 choice /c YN /cs
 if %errorlevel%==2 exit/b 100
-echo %time%
+echo %time% - start
 if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" del "C:\Tutor\Files\Lists\!Name%1!.bat"
 for /F "usebackq tokens=1 delims=*" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do (
 	if %%A NEQ !Name%1! echo.%%A>>"C:\Tutor\Files\Lists\Replace.txt"
@@ -598,11 +800,21 @@ for /F "usebackq tokens=1 delims=*" %%A in ("C:\Tutor\Files\Lists\Lists.txt") do
 type "C:\Tutor\Files\Lists\Replace.txt"
 )>"C:\Tutor\Files\Lists\Lists.txt"
 del "C:\Tutor\Files\Lists\Replace.txt"
-echo %time%
+if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
+	echo ERROR#004 - Failed to delete "!Name%1!"
+	echo Press 1 to retry
+	choice /c 12 /n
+	if !errorlevel!==1 goto:Delete %1
+) else (
+	if "!Name%1!" == "%recent%" echo.%blank:~1% > "C:\Tutor\Files\Lists\recent.txt"
+)
+echo %time% - end
 pause
 exit/b 100
+
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+
 
 :Edit
 mode 65,39>nul
@@ -620,7 +832,7 @@ set num=1
 :: UI Action
 :Qselect
 cls
-echo press left and right to navigate. Press enter to change 
+echo press left and right to navigate. Press enter to change
 echo.
 echo Question:
 echo !q%num%!
@@ -646,6 +858,9 @@ echo Answer:
 set /p a%num%=
 :: Delete Procedure
 
+
+:: just act like you are creating a new set but make it in a temp file and overwrite the main study file. Prevent all questions from being deleted or request to delete the set if the last question is about to be deleted.
+
 :: Have 2 files. One with numbers and one with the q/a content
 for /F %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 
@@ -657,82 +872,3 @@ for /F "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat")
 type "C:\Tutor\Files\Lists\Replace.txt"
 )>"C:\Tutor\Files\Lists\!Name%1!.bat"
 del "C:\Tutor\Files\Lists\Replace.txt"
-
-
-
-
-
-
-
-
-
-REM set/p fix=
-REM :: please change this
-REM set "question=something"
-REM :: "%question%"=="%%A" might need to have q/a and number
-REM for /f "usebackq tokens=* delims=*" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
-	REM if "%question%"=="%%A" (
-		REM (
-		REM %fix%
-		REM )>>"C:\Tutor\Files\Lists\replace.txt"
-	REM ) ELSE (
-		REM (
-		REM %%A
-		REM )>>"C:\Tutor\Files\Lists\replace.txt"
-	REM )
-	
-REM )
-REM (
-REM type "C:\Tutor\Files\Lists\replace.txt"
-REM )>"C:\Tutor\Files\Lists\!Name%1!.bat"
-REM del "C:\Tutor\Files\Lists\replace.txt"
-
-::::::::::::::::::::::::::::::::::::::::::::::DO Not look untill ready
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-::::::::::::::::::::::::DO NOT LOOK AT THIS!!! YOU ARE OVERCOMPLICATING THINGS!!!!!!!!!!!!!!!!!!!
-exit/b 100
-:: UI Input
-REM set Flines=0
-REM for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
-	REM set/a Flines+=1
-REM )
-REM :: Doesn't work. Might want to use the render method
-REM for /L %%B in (1,1,%Flines%) do (
-	REM for /f "usebackq tokens=* delims=*" %%C in ("C:\Tutor\Files\Lists\!Name%1!.bat") do @echo [%%B;1 %%C
-REM )
-pause
-exit/b 100
