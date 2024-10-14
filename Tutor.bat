@@ -178,7 +178,7 @@ echo ║[106m                                                          [0;34m�
 echo ║[106m                                                          [0;34m║
 echo ║[46m                                                          [0;34m║
 echo ╚══════════════════════════════════════════════════════════╝[0m
-<"C:\Tutor\Files\Lists\recent.txt" set /p recent=
+<"C:\Tutor\Files\Lists\recent.txt" set/p recent=
 set "Name1=%recent%"
 if "%LatestV%"=="1" (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 90 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover) ELSE (call Button 1 13 B0 "%recent%" 1 18 B0 "                      Study Sets                      " 1 23 B0 "                       Make Set                       " 1 28 B0 "                       Settings                       " 1 33 B0 "                       Credits                        " X _Var_Box _Var_Hover)
 getinput /m %_Var_Box% /h %_Var_Hover%s
@@ -287,10 +287,10 @@ set/a qna+=1
 :Qs
 cls
 echo Press "enter" on an empty question box to stop.
-echo Please Refrain from using: ^^! and %%
 set "q%qna%= "
 if %Dupe%==1 (set Dupe=0 && echo Question already exists.) ELSE echo.[3;1H                        
 set/p "q%qna%=Question %qna%:[1E"
+:: If question is empty
 if "!q%qna%!"==" " (
 	if %qna% GEQ 4 (
 		echo [0m[?25l
@@ -302,10 +302,15 @@ if "!q%qna%!"==" " (
 		echo Press "1" to exit without saving
 		echo Press "2" to continue creating
 		choice /c 12 /n
-		if !errorlevel!==1 if %qna% GTR 1 (goto:Delete %Name%) ELSE goto:top
+		if !errorlevel!==1 if %qna% GTR 1 (
+			set "Name1=%Name%"
+			call:Delete 1
+			if !errorlevel!==50 goto:top
+		) ELSE goto:top
 		goto:Qs
 	)
 )
+:: Duplicate question check
 set line=-1
 if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists\%Name%.bat") do (
 	set "A=%%A"
@@ -313,12 +318,42 @@ if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists
 	if /I "!A:~0,-1!"=="!q%qna%!" if !line!==1 set Dupe=1 && goto:Qs
 )
 set/p "a%qna%=Answer %qna%:[1E"
+
+:: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here ::
+
+:: Make sure "s work
+set string=!q%qna%!
+call:fixQnA
+set "q%qna%=%tempStr%"
+
+set string=!a%qna%!
+call:fixQnA "!a%qna%!"
+set "a%qna%=%tempStr%"
+:: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here ::
+
 if NOT exist "C:\Tutor\Files\Lists\%Name%.bat" echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 (
 echo set "q%qna%=!q%qna%!"
 echo set "a%qna%=!a%qna%!"
 )>>"C:\Tutor\Files\Lists\%Name%.bat"
 goto:Questions
+
+:fixQnA
+:: Char		= (^^)(^^)(^^)(^!)
+:: tempStr	= (^^)(^!)
+:: q/a		= (^!)
+set "tempStr="
+for /L %%A in (0, 1, 1000) do (
+	set "char=!string:~%%A,1!"
+	if !char!=="" exit/b 100
+	if "!char!"=="%%" set "char=%%%%" && set/a width+=1
+	if "!char!"=="^!" set "char=^^^^^^^!" && set/a width+=1
+	set tempStr=!tempStr!!char!
+)
+:: (Safety) Should never run unless over 1001 characters
+exit/b 100
+
+:fixAnswer
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: update the app in a new instance and update all files
 :: also update the Tutor.bat file so that you know what version of the main file you are using if you are opening an older version of the main file
@@ -472,7 +507,7 @@ if %errorlevel%==6 call:Learn 3
 if %errorlevel%==7 call:Learn 4
 if %errorlevel%==8 call:Learn 5
 if %errorlevel%==9 call:Learn 6
-if %errorlevel%==100 call:blankButtons
+if %errorlevel%==50 call:blankButtons
 goto:Sets2
 
 :pleq
@@ -508,12 +543,11 @@ set "Name%num%=%sName%"
 set "pName%num%=%sName%"
 set/a num+=1
 exit/b
-:work2
 
+:work2
 if "%sName%"=="" set "sName=%blank%"
 set "Name%Nnums%=%sName%"
 set/a Nnums+=1
-@echo off
 exit/b
 
 :Learn
@@ -700,7 +734,7 @@ if %errorlevel%==295 (
 		goto:ShPrep
 	)
 )
-if %errorlevel%==27 exit/b 50
+if %errorlevel%==27 exit/b 100
 goto:flashcards
 
 :ShPrep
@@ -801,7 +835,7 @@ set/a card=1 * %studySide%
 set/a i+=1
 exit/b 100
 
-:: ONLY CALL THIS LABEL
+
 :Delete
 cls
 echo Are you sure you want to delete
@@ -824,11 +858,12 @@ if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
 	choice /c 12 /n
 	if !errorlevel!==1 goto:Delete %1
 ) else (
-	if "!Name%1!" == "%recent%" echo.%blank:~1% > "C:\Tutor\Files\Lists\recent.txt"
+	<"C:\Tutor\Files\Lists\recent.txt" set/p recent=
+	if "!Name%1!"=="!recent!" echo.%blank:~1% > "C:\Tutor\Files\Lists\recent.txt"
 )
 echo %time% - end
 pause
-exit/b 100
+exit/b 50
 
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
