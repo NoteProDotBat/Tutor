@@ -1,8 +1,6 @@
-:: make user unable to enter problem chars
+:: Welcome to the backend!
 :: [
 :: [y;xH
-:: Put numbers next to ERROR# and make an error chart
-
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::                                                                                               ::
 ::                                       Tutor Error Chart                                       ::
@@ -37,10 +35,9 @@
 ::    #3 - Conjugation chart for learning languages                                              ::
 ::    #4 - Better settings UI and more options                                                   ::
 ::    #5 - Remove/change most recent set after set deletion                                      ::
-::    #6 - Better update and delete process                                                      ::
-::    #7 ┬ Better UI for studying sets                                                           ::
-::       └ #7.0 - questions are on flashcards                                                    ::
-::    #8 - More error#s                                                                          ::
+::    #6 ┬ Better UI for studying sets                                                           ::
+::       └ #6.0 - questions are on flashcards                                                    ::
+::    #7 - More error#s                                                                          ::
 ::                                                                                               ::
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ::                                                                                               ::
@@ -61,6 +58,13 @@ setlocal ENABLEDELAYEDEXPANSION> nul
 setlocal ENABLEEXTENSIONS> nul
 
 mode 60,39> nul
+
+REM set/p "a=string: "
+REM echo %a%
+REM set a=!a:%%=%%%%!
+REM set a=%a:^!=^^^!%
+REM echo %a%
+REM pause
 
 title Tutor
 :Connection
@@ -130,6 +134,7 @@ if "%cVer%"=="404: Not Found" (
 	set "cVer=%nVer%"
 )
 if "%cVer%"=="%nVer%" (title Tutor %cVer%) ELSE (set "LatestV=1" && title Tutor %cVer% - UPDATE AVAILABLE)
+set "blank=                                                      "
 echo [0m
 cls
 ::%%~nxG
@@ -292,7 +297,7 @@ if %Dupe%==1 (set Dupe=0 && echo Question already exists.) ELSE echo.[3;1H
 set/p "q%qna%=Question %qna%:[1E"
 :: If question is empty
 if "!q%qna%!"==" " (
-	if %qna% GEQ 4 (
+	if %qna% GTR 4 (
 		echo [0m[?25l
 		cls
 		goto:Home
@@ -319,9 +324,7 @@ if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists
 )
 set/p "a%qna%=Answer %qna%:[1E"
 
-:: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here ::
-
-:: Make sure "s work
+:: Checks for ! and % to include them
 set string=!q%qna%!
 call:fixQnA
 set "q%qna%=%tempStr%"
@@ -329,7 +332,6 @@ set "q%qna%=%tempStr%"
 set string=!a%qna%!
 call:fixQnA "!a%qna%!"
 set "a%qna%=%tempStr%"
-:: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here :: Check for ! and % here ::
 
 if NOT exist "C:\Tutor\Files\Lists\%Name%.bat" echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 (
@@ -415,7 +417,7 @@ goto:connection
 :Sets1
 set/a num=1
 set/a sNum=0
-set "blank=                                                      "
+set/a nSix=%num%/6*6
 call:blankButtons
 for /f "usebackq delims=* tokens=1 " %%G in ("C:\Tutor\Files\Lists\Lists.txt") do (
 	@set "sName=%%G"
@@ -740,7 +742,7 @@ goto:flashcards
 :ShPrep
 if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt"
 if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt"
-if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" echo..>"C:\Tutor\Files\Lists\ShOrder.txt"
+echo..>"C:\Tutor\Files\Lists\ShOrder.txt"
 set "numQs=%questions%"
 
 for /L %%A in (1,1,%questions%) do (
@@ -805,7 +807,7 @@ if %errorlevel%==295 (
 if %errorlevel%==27 (
 	if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt" > nul
 	if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt" > nul
-	if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" del"C:\Tutor\Files\Lists\ShOrder.txt" > nul
+	if EXIST "C:\Tutor\Files\Lists\ShOrder.txt" del "C:\Tutor\Files\Lists\ShOrder.txt" > nul
 	exit/b 50
 )
 goto:ShStudy
@@ -859,7 +861,7 @@ if EXIST "C:\Tutor\Files\Lists\!Name%1!.bat" (
 	if !errorlevel!==1 goto:Delete %1
 ) else (
 	<"C:\Tutor\Files\Lists\recent.txt" set/p recent=
-	if "!Name%1!"=="!recent!" echo.%blank:~1% > "C:\Tutor\Files\Lists\recent.txt"
+	if "!Name%1!"=="!recent!" echo.%blank%>"C:\Tutor\Files\Lists\recent.txt"
 )
 echo %time% - end
 pause
