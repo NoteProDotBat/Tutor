@@ -740,37 +740,28 @@ if %errorlevel%==27 exit/b 100
 goto:flashcards
 
 :ShPrep
-if EXIST "C:\Tutor\Files\Lists\Shuffle.txt" del "C:\Tutor\Files\Lists\Shuffle.txt"
-if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" del "C:\Tutor\Files\Lists\ShReplace.txt"
+
 echo..>"C:\Tutor\Files\Lists\ShOrder.txt"
-set "numQs=%questions%"
+
+:: Create an array for shuffling numbers
+for /L %%A in (1,1,%questions%) do (
+    set "arr[%%A]=%%A"
+)
+
+:: Shuffle using Fisher-Yates algorithm
+for /L %%i in (%questions%,-1,2) do (
+    set/a "j=!random! %% %%i + 1"
+	for %%j in (!j!) do (
+		set "temp=!arr[%%i]!"
+		set "arr[%%i]=!arr[%%j]!"
+		set "arr[%%j]=!temp!"
+	)
+)
 
 for /L %%A in (1,1,%questions%) do (
-	echo.%%A>>"C:\Tutor\Files\Lists\Shuffle.txt"
+	echo.!arr[%%A]!>>"C:\Tutor\Files\Lists\ShOrder.txt"
 )
-
-:Shuffle
-set/a line=0
-::change Shuffle to Numbers and ShuffleOrder to Shuffle?
-set/a var = %random% %% %numQs% + 1
-for /F "usebackq" %%A in ("C:\Tutor\Files\Lists\Shuffle.txt") do (
-	set "number=%%A"
-	call:ShOrder
-)
-if EXIST "C:\Tutor\Files\Lists\ShReplace.txt" (
-	(
-	type "C:\Tutor\Files\Lists\ShReplace.txt"
-	)>"C:\Tutor\Files\Lists\Shuffle.txt"
-	del "C:\Tutor\Files\Lists\ShReplace.txt"
-)
-set/a numQs-=1
-if %numQs% LEQ 0 goto:ShStudy
-goto:Shuffle
-
-:ShOrder
-set/a line+=1
-if %line%==%var% (echo.%number%>>"C:\Tutor\Files\Lists\ShOrder.txt") ELSE (echo.%number%>>"C:\Tutor\Files\Lists\ShReplace.txt")
-exit/b 100
+goto :ShStudy
 
 :ShStudy
 :: get the numbers from the file ShuffleOrder and make that the q/a order
