@@ -59,12 +59,14 @@ setlocal ENABLEEXTENSIONS> nul
 
 mode 60,39> nul
 
+REM :loop
 REM set/p "a=string: "
-REM echo %a%
-REM set a=!a:%%=%%%%!
-REM set a=%a:^!=^^^!%
-REM echo %a%
+REM echo !a!
+REM set "a=!a:%%=%%%%!"
+REM set "a=%a:!=^^^!%"
+REM echo !a!
 REM pause
+REM goto:loop
 
 title Tutor
 :Connection
@@ -325,13 +327,14 @@ if %qna% GEQ 2 for /f "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists
 set/p "a%qna%=Answer %qna%:[1E"
 
 :: Checks for ! and % to include them
+:: 
 set string=!q%qna%!
-call:fixQnA
-set "q%qna%=%tempStr%"
+call:escSpecialChars
+set "q%qna%=%string%"
 
 set string=!a%qna%!
-call:fixQnA "!a%qna%!"
-set "a%qna%=%tempStr%"
+call:escSpecialChars "!a%qna%!"
+set "a%qna%=%string%"
 
 if NOT exist "C:\Tutor\Files\Lists\%Name%.bat" echo.%Name%>>"C:\Tutor\Files\Lists\Lists.txt"
 (
@@ -340,22 +343,14 @@ echo set "a%qna%=!a%qna%!"
 )>>"C:\Tutor\Files\Lists\%Name%.bat"
 goto:Questions
 
-:fixQnA
-:: Char		= (^^)(^^)(^^)(^!)
-:: tempStr	= (^^)(^!)
-:: q/a		= (^!)
-set "tempStr="
-for /L %%A in (0, 1, 1000) do (
-	set "char=!string:~%%A,1!"
-	if !char!=="" exit/b 100
-	if "!char!"=="%%" set "char=%%%%" && set/a width+=1
-	if "!char!"=="^!" set "char=^^^^^^^!" && set/a width+=1
-	set tempStr=!tempStr!!char!
-)
-:: (Safety) Should never run unless over 1001 characters
+:: Store the length of the question/answer into a file?
+:escSpecialChars
+:: substitutuion	= (^^)(^^)(^^)(^!)
+:: string			= (^^)(^!)
+:: q/a				= (^!)
+set "string=!string:%%=%%%%!"
+set "string=%string:!=^^^^^^^!%"
 exit/b 100
-
-:fixAnswer
 
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: update the app in a new instance and update all files
 :: also update the Tutor.bat file so that you know what version of the main file you are using if you are opening an older version of the main file
@@ -892,7 +887,7 @@ getinput
 if %errorlevel%==295 (if %num% LSS %Questions% set/a num+=1)
 :: Right
 if %errorlevel%==293 (if %num% NEQ 1 set/a num-=1)
-::Enter
+:: Enter
 if %errorlevel%==13 goto:Qchanger
 goto:Qselect
 
