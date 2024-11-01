@@ -287,7 +287,7 @@ if NOT %errorlevel%==0 (
 goto:nMake
 
 :Questions
-mode 65,39> nul
+mode 60,39> nul
 :: have an escape into the blue area under the set name?
 echo [?25h
 set/a qna+=1
@@ -702,7 +702,7 @@ set/a questions=%Flines%/2
 
 ::: Looking better but you still need to have more study options and prevent spliting words
 :flashcards
-mode 65,39> nul
+mode 60,39> nul
 cls
 echo [?25l[0;0H Press arrow keys to flip the card.
 echo  Press "escape" to exit
@@ -760,7 +760,7 @@ goto :ShStudy
 
 :ShStudy
 :: get the numbers from the file ShuffleOrder and make that the q/a order
-mode 65,39> nul
+mode 60,39> nul
 call:number
 cls
 echo [?25l[0;0H Press arrow keys to navigate the cards.
@@ -858,12 +858,9 @@ exit/b 50
 
 
 :Edit
-mode 65,39>nul
-cls
-echo Under construction
-echo Press any key to return...
-pause>nul
-exit/b 100
+set Flines=0
+set/a setNum=%1
+call "C:\Tutor\Files\Lists\!Name%1!.bat"
 for /f "usebackq" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
 	set/a Flines+=1
 )
@@ -873,7 +870,7 @@ set num=1
 :: UI Action
 :Qselect
 cls
-echo press left and right to navigate. Press enter to change
+echo [?25lpress left and right to navigate. Press enter to change
 echo.
 echo Question:
 echo !q%num%!
@@ -888,28 +885,46 @@ if %errorlevel%==295 (if %num% LSS %Questions% set/a num+=1)
 :: Right
 if %errorlevel%==293 (if %num% NEQ 1 set/a num-=1)
 :: Enter
-if %errorlevel%==13 goto:Qchanger
+if %errorlevel%==13 call:Qchanger !setNum!
+:: Escape
+if %errorlevel%==27 exit/b 100
 goto:Qselect
 
 :Qchanger
+echo [?25h
+cls
+echo Press enter while empty to keep the same
+echo Question (old):
+echo !q%num%!
+echo Question (new):
+set "tempQ= "
+set/p tempQ=
+cls
+echo Press enter while empty to keep the same
 echo Question:
-set /p q%num%=@
-echo.
-echo Answer:
-set /p a%num%=
-:: Delete Procedure
+if "!tempQ!"==" " (echo !q%num%!) else echo !tempQ!
+echo Answer (old):
+echo !a%num%!
+echo Answer (new):
+set "tempA= "
+set/p tempA=
 
-
-:: just act like you are creating a new set but make it in a temp file and overwrite the main study file. Prevent all questions from being deleted or request to delete the set if the last question is about to be deleted.
-
-:: Have 2 files. One with numbers and one with the q/a content
-for /F %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
-
-for /F "usebackq tokens=2 delims==" %%A in ("C:\Tutor\Files\Lists\!Name%1!.bat") do (
-	if "%%A" NEQ "set "q%i%=!q%i%!"" echo.%%A>>"C:\Tutor\Files\Lists\Replace1.txt"
-	
+if NOT "!tempQ!"==" " (
+	set string=!tempQ!
+	call:escSpecialChars
+	echo !string!
+	set "q%num%=!string!"
 )
-(
-type "C:\Tutor\Files\Lists\Replace.txt"
-)>"C:\Tutor\Files\Lists\!Name%1!.bat"
-del "C:\Tutor\Files\Lists\Replace.txt"
+if NOT "!tempA!"==" " (
+	set string=!tempA!
+	call:escSpecialChars
+	echo !string!
+	set "a%num%=!string!"
+)
+(type "C:\Tutor\Files\Lists\!Name%1!.bat")>"C:\Tutor\Files\Lists\temp.txt"
+del "C:\Tutor\Files\Lists\!Name%1!.bat" > nul
+for /L %%A in (1, 1, %questions%) do (
+	echo set "q%%A=!q%%A!">>"C:\Tutor\Files\Lists\!Name%1!.bat"
+	echo set "a%%A=!a%%A!">>"C:\Tutor\Files\Lists\!Name%1!.bat"
+)
+call "C:\Tutor\Files\Lists\!Name%1!.bat" & exit/b 100
